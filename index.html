@@ -808,20 +808,20 @@
             <div class="hint">Bounding boxes, masks, or labels per image</div>
           </div>
           <div class="field">
-            <label>Current Label Accuracy (%)</label>
-            <input type="number" id="labelAccuracy" value="90" min="50" max="100" oninput="calculate()">
-          </div>
-        </div>
-        <div class="row">
-          <div class="field">
             <label>Cost per Annotation ($)</label>
             <input type="number" id="costPerAnnotation" value="0.06" min="0.01" max="50" step="0.01" oninput="calculate()">
             <div class="hint">Per-object cost: $0.02–$0.07 bbox, $0.10–$5.00 mask (modality scales automatically)</div>
           </div>
+        </div>
+        <div class="row">
           <div class="field">
             <label>Existing Labels (%)</label>
             <input type="number" id="existingLabelPct" value="100" min="0" max="100" step="5" oninput="calculate()">
             <div class="hint">% of images that already have labels</div>
+          </div>
+          <div class="field">
+            <label>Accuracy on Existing Labels (%)</label>
+            <input type="number" id="labelAccuracy" value="90" min="50" max="100" oninput="calculate()">
           </div>
         </div>
       </div>
