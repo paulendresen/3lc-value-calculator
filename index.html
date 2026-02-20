@@ -5,10 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>3LC Value Calculator - Estimate Your ROI</title>
 <style>
+  /* Light theme (default) */
   :root {
     --primary: #6C3AED;
-    --primary-light: #8B5CF6;
+    --primary-light: #7C3AED;
     --primary-dark: #5B21B6;
+    --accent: #D97706;
+    --accent-light: #F59E0B;
+    --green: #059669;
+    --green-dark: #047857;
+    --red: #DC2626;
+    --bg: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --bg-card-hover: #F8FAFC;
+    --bg-input: #F1F5F9;
+    --border: #E2E8F0;
+    --text: #1E293B;
+    --text-muted: #64748B;
+    --text-dim: #94A3B8;
+    --glow: rgba(108, 58, 237, 0.12);
+    --glow-green: rgba(5, 150, 105, 0.12);
+    --glow-accent: rgba(217, 119, 6, 0.1);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  /* Dark theme */
+  [data-theme="dark"] {
+    --primary-light: #8B5CF6;
     --accent: #F59E0B;
     --accent-light: #FCD34D;
     --green: #10B981;
@@ -25,8 +51,8 @@
     --glow: rgba(108, 58, 237, 0.3);
     --glow-green: rgba(16, 185, 129, 0.3);
     --glow-accent: rgba(245, 158, 11, 0.2);
-    --radius: 12px;
-    --radius-sm: 8px;
+    --shadow-card: none;
+    --shadow-card-hover: 0 2px 20px rgba(16, 185, 129, 0.15);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -39,16 +65,22 @@
     min-height: 100vh;
   }
 
-  /* Subtle grid background */
+  /* Subtle background gradient */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image:
-      radial-gradient(circle at 20% 20%, rgba(108, 58, 237, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(245, 158, 11, 0.04) 0%, transparent 50%);
+      radial-gradient(circle at 20% 20%, rgba(108, 58, 237, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(245, 158, 11, 0.02) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
+  }
+
+  [data-theme="dark"] body::before {
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(108, 58, 237, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(245, 158, 11, 0.04) 0%, transparent 50%);
   }
 
   .container {
@@ -59,10 +91,31 @@
     z-index: 1;
   }
 
-  /* Header */
+  /* Dark header wrapper — always dark regardless of theme */
+  .header-wrap {
+    background: #0F0F1A;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(108, 58, 237, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .header-wrap .container {
+    position: relative;
+  }
+
   header {
     padding: 48px 0 32px;
     text-align: center;
+    position: relative;
   }
 
   .logo {
@@ -87,7 +140,7 @@
   .logo-text {
     font-size: 28px;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--text), var(--primary-light));
+    background: linear-gradient(135deg, #E2E8F0, #8B5CF6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -97,19 +150,43 @@
     font-weight: 800;
     margin-bottom: 12px;
     letter-spacing: -0.5px;
+    color: #E2E8F0;
   }
 
   header h1 span {
-    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    background: linear-gradient(135deg, #F59E0B, #FCD34D);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   header p {
-    color: var(--text-muted);
+    color: #94A3B8;
     font-size: 18px;
     max-width: 640px;
     margin: 0 auto;
+  }
+
+  /* Theme toggle in header */
+  .theme-toggle {
+    position: absolute;
+    top: 24px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s;
+    color: #E2E8F0;
+  }
+
+  .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
   }
 
   /* Layout */
@@ -136,11 +213,13 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 24px;
-    transition: border-color 0.2s;
+    box-shadow: var(--shadow-card);
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
   .card:hover {
     border-color: var(--primary);
+    box-shadow: var(--shadow-card-hover);
   }
 
   .card h2 {
@@ -222,10 +301,14 @@
   select {
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     padding-right: 32px;
+  }
+
+  [data-theme="dark"] select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
   }
 
   .row {
@@ -276,11 +359,16 @@
   }
 
   .accuracy-hero {
-    background: linear-gradient(135deg, var(--bg-card), rgba(59, 130, 246, 0.08));
-    border: 1px solid #3B82F6;
+    background: linear-gradient(135deg, var(--bg-card), rgba(59, 130, 246, 0.06));
+    border: 1px solid rgba(59, 130, 246, 0.3);
     border-radius: var(--radius);
     padding: 28px;
     text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+
+  [data-theme="dark"] .accuracy-hero {
+    border-color: #3B82F6;
     box-shadow: 0 4px 40px rgba(59, 130, 246, 0.1);
   }
 
@@ -338,11 +426,16 @@
   }
 
   .total-savings {
-    background: linear-gradient(135deg, var(--bg-card), rgba(108, 58, 237, 0.08));
-    border: 1px solid var(--primary);
+    background: linear-gradient(135deg, var(--bg-card), rgba(108, 58, 237, 0.05));
+    border: 1px solid rgba(108, 58, 237, 0.3);
     border-radius: var(--radius);
     padding: 32px;
     text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+
+  [data-theme="dark"] .total-savings {
+    border-color: var(--primary);
     box-shadow: 0 4px 40px var(--glow);
   }
 
@@ -389,11 +482,16 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 20px;
+    box-shadow: var(--shadow-card);
     transition: all 0.3s;
   }
 
   .saving-card:hover {
     border-color: var(--green);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  [data-theme="dark"] .saving-card:hover {
     box-shadow: 0 2px 20px var(--glow-green);
   }
 
@@ -467,6 +565,7 @@
     border-radius: var(--radius);
     padding: 20px;
     text-align: center;
+    box-shadow: var(--shadow-card);
   }
 
   .roi-badge .roi-label {
@@ -500,6 +599,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 24px;
+    box-shadow: var(--shadow-card);
   }
 
   .assumptions-card h3 {
@@ -638,16 +738,23 @@
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
+    box-shadow: var(--shadow-card);
   }
 
   .preset-btn:hover {
     border-color: var(--primary);
-    color: var(--primary-light);
-    background: rgba(108, 58, 237, 0.08);
+    color: var(--primary);
+    background: rgba(108, 58, 237, 0.06);
   }
 
   .preset-btn.active {
     border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(108, 58, 237, 0.08);
+  }
+
+  [data-theme="dark"] .preset-btn:hover,
+  [data-theme="dark"] .preset-btn.active {
     color: var(--primary-light);
     background: rgba(108, 58, 237, 0.12);
   }
@@ -655,15 +762,21 @@
 </head>
 <body>
 
+<div class="header-wrap">
+  <div class="container">
+    <header>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark theme" id="themeToggle">&#9790;</button>
+      <div class="logo">
+        <div class="logo-icon"><img src="https://3lc.ai/wp-content/uploads/2025/02/3LC-RegularDrk.svg" alt="3LC Logo"></div>
+        <div class="logo-text">Value Calculator</div>
+      </div>
+      <h1>Estimate Your <span>ROI with 3LC</span></h1>
+      <p>See how much time, money, and compute you could save by adopting 3LC's data-centric AI platform for your computer vision workflows.</p>
+    </header>
+  </div>
+</div>
+
 <div class="container">
-  <header>
-    <div class="logo">
-      <div class="logo-icon"><img src="https://3lc.ai/wp-content/uploads/2025/02/3LC-RegularDrk.svg" alt="3LC Logo"></div>
-      <div class="logo-text">Value Calculator</div>
-    </div>
-    <h1>Estimate Your <span>ROI with 3LC</span></h1>
-    <p>See how much time, money, and compute you could save by adopting 3LC's data-centric AI platform for your computer vision workflows.</p>
-  </header>
 
   <!-- Presets -->
   <div class="presets">
@@ -849,6 +962,25 @@
 </div>
 
 <script>
+  // Theme
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    document.getElementById('themeToggle').textContent = next === 'dark' ? '\u2600' : '\u263E';
+  }
+
+  // Apply saved theme (default: light)
+  (function() {
+    const saved = localStorage.getItem('theme') || 'light';
+    if (saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('themeToggle').textContent = '\u2600';
+    }
+  })();
+
   // State
   const toggleState = {
     hasLabels: 'yes'
