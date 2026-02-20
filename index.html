@@ -928,8 +928,8 @@
         <div class="assumption-item">33% data scientist productivity gain (based on energy major case study: work completed in 66% of the time)</div>
         <div class="assumption-item">40x labeling acceleration vs. manual human labeling, while achieving higher accuracy than both manual and auto-labeling</div>
         <div class="assumption-item">Error rate cut in half on average through data-centric improvements: label correction, category refinement, sample removal, sample weighting, and targeted data curation (observed across 3LC customers)</div>
-        <div class="assumption-item">Dataset reduction of 20-40% through identification and removal of redundant/low-value samples</div>
-        <div class="assumption-item">75% training time reduction achievable via cleaner, smaller datasets (client-reported)</div>
+        <div class="assumption-item">Curated dataset is ~25% smaller, making each epoch faster</div>
+        <div class="assumption-item">Cleaner data means the model converges faster, requiring ~20% fewer epochs</div>
         <div class="assumption-item">Labeling savings scale with annotation complexity: segmentation masks cost 3-5x more than bounding boxes</div>
         <div class="assumption-item">Estimates are illustrative. Actual results vary by dataset quality, team size, and workflow maturity</div>
       </div>
@@ -1202,7 +1202,7 @@
         cat: 'cat-training',
         label: 'Training Compute',
         amount: trainingSaving,
-        detail: `~${pctTrainSaved}% compute reduction: ${Math.round(improvements.datasetReduction * 100)}% smaller curated dataset + ${Math.round(improvements.fewerEpochsFactor * 100)}% fewer epochs with cleaner data.`,
+        detail: `~${pctTrainSaved}% compute reduction: curated dataset is ${Math.round(improvements.datasetReduction * 100)}% smaller so each epoch is faster, and cleaner data means the model converges in ${Math.round(improvements.fewerEpochsFactor * 100)}% fewer epochs.`,
         pct: trainingSaving / maxSaving * 100
       }
     ];
