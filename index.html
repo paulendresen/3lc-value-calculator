@@ -766,18 +766,13 @@
         <h2><span class="icon icon-purple">&#128101;</span> Team &amp; Cost</h2>
         <div class="row">
           <div class="field">
-            <label>Data Scientists</label>
+            <label>Data Scientists / ML Engineers</label>
             <input type="number" id="numDataScientists" value="5" min="1" max="200" oninput="calculate()">
           </div>
           <div class="field">
             <label>Avg. Salary ($K / year)</label>
             <input type="number" id="salary" value="150" min="30" max="1000" oninput="calculate()">
           </div>
-        </div>
-        <div class="field">
-          <label>% Time on Data Work &amp; Model Building</label>
-          <input type="number" id="dataWorkPercent" value="60" min="10" max="100" oninput="calculate()">
-          <div class="hint">Data curation, labeling, debugging, training &amp; tuning models</div>
         </div>
       </div>
 
@@ -985,42 +980,42 @@
   // ── Presets ──
   const presets = {
     energy: {
-      numDataScientists: 8, salary: 160, dataWorkPercent: 55,
+      numDataScientists: 8, salary: 160,
       numImages: 200000, modality: 'detection', annotationsPerImage: 8,
       costPerAnnotation: 0.10,
       trainingHours: 12, gpuCostPerHour: 3.50, trainingRunsPerYear: 80, gpusPerRun: 4,
       currentAccuracy: 82
     },
     automotive: {
-      numDataScientists: 10, salary: 170, dataWorkPercent: 50,
+      numDataScientists: 10, salary: 170,
       numImages: 500000, modality: 'detection', annotationsPerImage: 12,
       costPerAnnotation: 0.08,
       trainingHours: 24, gpuCostPerHour: 5.00, trainingRunsPerYear: 60, gpusPerRun: 8,
       currentAccuracy: 88
     },
     agriculture: {
-      numDataScientists: 4, salary: 130, dataWorkPercent: 65,
+      numDataScientists: 4, salary: 130,
       numImages: 80000, modality: 'segmentation', annotationsPerImage: 6,
       costPerAnnotation: 0.06,
       trainingHours: 6, gpuCostPerHour: 3.50, trainingRunsPerYear: 40, gpusPerRun: 2,
       currentAccuracy: 78
     },
     medical: {
-      numDataScientists: 6, salary: 180, dataWorkPercent: 50,
+      numDataScientists: 6, salary: 180,
       numImages: 100000, modality: 'segmentation', annotationsPerImage: 3,
       costPerAnnotation: 0.10,
       trainingHours: 16, gpuCostPerHour: 5.00, trainingRunsPerYear: 100, gpusPerRun: 4,
       currentAccuracy: 86
     },
     startup: {
-      numDataScientists: 3, salary: 140, dataWorkPercent: 70,
+      numDataScientists: 3, salary: 140,
       numImages: 30000, modality: 'detection', annotationsPerImage: 5,
       costPerAnnotation: 0.04,
       trainingHours: 4, gpuCostPerHour: 3.50, trainingRunsPerYear: 100, gpusPerRun: 1,
       currentAccuracy: 80
     },
     enterprise: {
-      numDataScientists: 15, salary: 165, dataWorkPercent: 55,
+      numDataScientists: 15, salary: 165,
       numImages: 1000000, modality: 'detection', annotationsPerImage: 10,
       costPerAnnotation: 0.06,
       trainingHours: 20, gpuCostPerHour: 4.00, trainingRunsPerYear: 120, gpusPerRun: 8,
@@ -1038,7 +1033,7 @@
 
     // Set all input values
     const fields = [
-      'numDataScientists', 'salary', 'dataWorkPercent', 'numImages',
+      'numDataScientists', 'salary', 'numImages',
       'annotationsPerImage', 'costPerAnnotation',
       'trainingHours', 'gpuCostPerHour',
       'trainingRunsPerYear', 'gpusPerRun', 'currentAccuracy'
@@ -1071,7 +1066,6 @@
   function calculate() {
     const numDS = val('numDataScientists');
     const salaryK = val('salary');
-    const dataWorkPct = val('dataWorkPercent') / 100;
     const numImages = val('numImages');
     const modality = document.getElementById('modality').value;
     const annPerImage = val('annotationsPerImage');
@@ -1087,9 +1081,8 @@
     // 1. DATA SCIENTIST PRODUCTIVITY SAVINGS
     // ──────────────────────────────────────────
     const totalSalary = numDS * salaryK * 1000;
-    const dataWorkCost = totalSalary * dataWorkPct;
-    const productivitySaving = dataWorkCost * improvements.productivityGain;
-    const hoursSavedProductivity = numDS * 2080 * dataWorkPct * improvements.productivityGain;
+    const productivitySaving = totalSalary * improvements.productivityGain;
+    const hoursSavedProductivity = numDS * 2080 * improvements.productivityGain;
 
     // ──────────────────────────────────────────
     // 2. LABELING COST SAVINGS
@@ -1145,9 +1138,9 @@
     const cards = [
       {
         cat: 'cat-productivity',
-        label: 'Data Scientist Productivity',
+        label: 'Data Scientist / ML Engineer Productivity',
         amount: productivitySaving,
-        detail: `${numDS} data scientists work 33% faster on data work &amp; model building (energy major benchmark). Less time tuning hyperparameters, more impact from fixing data. Saves ~${Math.round(hoursSavedProductivity).toLocaleString()} hours/year.`,
+        detail: `${numDS} data scientists / ML engineers save 33% of their time with 3LC (energy major benchmark). Saves ~${Math.round(hoursSavedProductivity).toLocaleString()} hours/year.`,
         pct: productivitySaving / maxSaving * 100
       },
       {
