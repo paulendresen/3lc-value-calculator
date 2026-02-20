@@ -396,15 +396,28 @@
 
   .acc-value-prompt {
     margin-top: 16px;
-    padding-top: 16px;
+    padding-top: 20px;
     border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  .acc-value-symbol {
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: -4px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 8px;
   }
 
   .acc-value-heading {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
     color: #3B82F6;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    line-height: 1.3;
   }
 
   .acc-value-questions {
@@ -897,6 +910,7 @@
         <div class="acc-gain-badge" id="accGainBadge">+7.5pp</div>
         <div class="acc-detail" id="accDetail">On average, 3LC customers cut their error rate in half through data-centric improvements: fixing labels, removing noisy samples, weighting data, and curating exactly the signal your model needs.</div>
         <div class="acc-value-prompt">
+          <div class="acc-value-symbol">$?</div>
           <div class="acc-value-heading">Not counted in the savings above &mdash; but often the biggest value of all.</div>
           <div class="acc-value-questions">
             Is this the difference between deploying your model or not? What does each percentage point of accuracy mean for your product, your customers, or your defect rate? You know the answer. We just help you get there.
