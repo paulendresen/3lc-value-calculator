@@ -394,6 +394,26 @@
     line-height: 1.5;
   }
 
+  .acc-value-prompt {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .acc-value-heading {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3B82F6;
+    margin-bottom: 8px;
+  }
+
+  .acc-value-questions {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
   .total-savings {
     background: linear-gradient(135deg, var(--bg-card), rgba(108, 58, 237, 0.05));
     border: 1px solid rgba(108, 58, 237, 0.3);
@@ -854,11 +874,17 @@
         <div class="label">Expected Accuracy Improvement</div>
         <div class="accuracy-values">
           <span class="acc-current" id="accCurrent">85%</span>
-          <span class="acc-arrow">→</span>
+          <span class="acc-arrow">&rarr;</span>
           <span class="acc-new" id="accNew">92.5%</span>
         </div>
         <div class="acc-gain-badge" id="accGainBadge">+7.5pp</div>
-        <div class="acc-detail" id="accDetail">On average, 3LC customers cut their error rate in half through data-centric improvements: fixing labels, adding categories, removing noisy samples, understanding model struggles, weighting samples, and curating exactly the data with the right signal.</div>
+        <div class="acc-detail" id="accDetail">On average, 3LC customers cut their error rate in half through data-centric improvements: fixing labels, removing noisy samples, weighting data, and curating exactly the signal your model needs.</div>
+        <div class="acc-value-prompt">
+          <div class="acc-value-heading">Not counted in the savings above &mdash; but often the biggest value of all.</div>
+          <div class="acc-value-questions">
+            Is this the difference between deploying your model or not? What does each percentage point of accuracy mean for your product, your customers, or your defect rate? You know the answer. We just help you get there.
+          </div>
+        </div>
       </div>
 
       <div class="total-savings">
@@ -1129,7 +1155,6 @@
     document.getElementById('accCurrent').textContent = (currentAcc * 100).toFixed(0) + '%';
     document.getElementById('accNew').textContent = '~' + newAccuracy.toFixed(1) + '%';
     document.getElementById('accGainBadge').textContent = '+' + scaledImprovement.toFixed(1) + 'pp';
-    document.getElementById('accDetail').textContent = `On average, 3LC customers cut their error rate in half through data-centric improvements: fixing labels, adding categories, removing noisy samples, understanding model struggles, weighting samples, and curating exactly the data with the right signal.`;
 
     // Payback
     // Render breakdown cards (dollar savings only)
