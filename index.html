@@ -812,7 +812,7 @@
 
       <!-- Training & Compute -->
       <div class="card">
-        <h2><span class="icon icon-blue">&#9889;</span> Training &amp; Compute</h2>
+        <h2><span class="icon icon-blue">&#9889;</span> Training &amp; Compute Per Data Scientist</h2>
         <div class="row">
           <div class="field">
             <label>Training Time (hours/run)</label>
@@ -827,7 +827,7 @@
         <div class="row">
           <div class="field">
             <label>Training Runs / Year</label>
-            <input type="number" id="trainingRunsPerYear" value="50" min="1" max="2000" oninput="calculate()">
+            <input type="number" id="trainingRunsPerYear" value="200" min="1" max="2000" oninput="calculate()">
             <div class="hint">Including retraining &amp; experiments</div>
           </div>
           <div class="field">
@@ -1096,7 +1096,7 @@
     // ──────────────────────────────────────────
     // 3. TRAINING COMPUTE SAVINGS
     // ──────────────────────────────────────────
-    const annualComputeCost = trainHours * gpuCost * gpusPerRun * runsPerYear;
+    const annualComputeCost = trainHours * gpuCost * gpusPerRun * runsPerYear * numDS;
     const datasetReductionSaving = annualComputeCost * improvements.datasetReduction;
     const fewerEpochsSaving = (annualComputeCost - datasetReductionSaving) * improvements.fewerEpochsFactor;
     const trainingSaving = datasetReductionSaving + fewerEpochsSaving;
