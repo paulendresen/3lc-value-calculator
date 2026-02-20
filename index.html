@@ -550,7 +550,6 @@
   .cat-training .dot, .cat-training .bar-fill { background: var(--accent); }
   .cat-productivity .dot, .cat-productivity .bar-fill { background: var(--green); }
   .cat-accuracy .dot, .cat-accuracy .bar-fill { background: #3B82F6; }
-  .cat-dataset .dot, .cat-dataset .bar-fill { background: #EC4899; }
 
   /* ROI Badge */
   .roi-row {
@@ -1202,14 +1201,7 @@
     const pctTrainSaved = annualComputeCost > 0 ? ((trainingSaving / annualComputeCost) * 100).toFixed(0) : 0;
 
     // ──────────────────────────────────────────
-    // 4. DATASET EFFICIENCY (smaller = faster iteration)
-    // ──────────────────────────────────────────
-    const iterationValue = runsPerYear * trainHours * 0.15 * gpuCost * gpusPerRun;
-    const storageSaving = numImages * 0.0001 * improvements.datasetReduction;
-    const datasetSaving = iterationValue + storageSaving;
-
-    // ──────────────────────────────────────────
-    // 5. ACCURACY IMPROVEMENT (non-dollar, shown separately)
+    // 4. ACCURACY IMPROVEMENT (non-dollar, shown separately)
     // Error rate cut in half on average through data curation
     // ──────────────────────────────────────────
     const currentErrorRate = 1 - currentAcc;
@@ -1220,7 +1212,7 @@
     // ──────────────────────────────────────────
     // TOTALS (dollar savings only - no accuracy speculation)
     // ──────────────────────────────────────────
-    const total = productivitySaving + labelingSaving + trainingSaving + datasetSaving;
+    const total = productivitySaving + labelingSaving + trainingSaving;
     const totalHoursSaved = hoursSavedProductivity + (salaryK > 0 ? (labelingSaving / (salaryK * 1000 / 2080)) : 0);
 
     // Render total
@@ -1239,7 +1231,7 @@
 
     // Payback
     // Render breakdown cards (dollar savings only)
-    const maxSaving = Math.max(productivitySaving, labelingSaving, trainingSaving, datasetSaving, 1);
+    const maxSaving = Math.max(productivitySaving, labelingSaving, trainingSaving, 1);
 
     const cards = [
       {
@@ -1262,13 +1254,6 @@
         amount: trainingSaving,
         detail: `~${pctTrainSaved}% compute reduction: ${Math.round(improvements.datasetReduction * 100)}% smaller curated dataset + ${Math.round(improvements.fewerEpochsFactor * 100)}% fewer epochs with cleaner data.`,
         pct: trainingSaving / maxSaving * 100
-      },
-      {
-        cat: 'cat-dataset',
-        label: 'Faster Iteration Cycles',
-        amount: datasetSaving,
-        detail: `Smaller, curated datasets = faster experiments. Tight edit-retrain loop eliminates manual data export/import overhead.`,
-        pct: datasetSaving / maxSaving * 100
       }
     ];
 
