@@ -813,17 +813,6 @@
             <div class="hint">Per-object cost: $0.02–$0.07 bbox, $0.10–$5.00 mask (modality scales automatically)</div>
           </div>
         </div>
-        <div class="row">
-          <div class="field">
-            <label>Existing Labels (%)</label>
-            <input type="number" id="existingLabelPct" value="100" min="0" max="100" step="5" oninput="calculate()">
-            <div class="hint">% of images that already have labels</div>
-          </div>
-          <div class="field">
-            <label>Accuracy on Existing Labels (%)</label>
-            <input type="number" id="labelAccuracy" value="90" min="50" max="100" oninput="calculate()">
-          </div>
-        </div>
       </div>
 
       <!-- Training & Compute -->
@@ -998,7 +987,6 @@
     energy: {
       numDataScientists: 8, salary: 160, dataWorkPercent: 55,
       numImages: 200000, modality: 'detection', annotationsPerImage: 8,
-      labelAccuracy: 88, existingLabelPct: 100,
       costPerAnnotation: 0.10,
       trainingHours: 12, gpuCostPerHour: 3.50, trainingRunsPerYear: 80, gpusPerRun: 4,
       currentAccuracy: 82
@@ -1006,7 +994,6 @@
     automotive: {
       numDataScientists: 10, salary: 170, dataWorkPercent: 50,
       numImages: 500000, modality: 'detection', annotationsPerImage: 12,
-      labelAccuracy: 92, existingLabelPct: 100,
       costPerAnnotation: 0.08,
       trainingHours: 24, gpuCostPerHour: 5.00, trainingRunsPerYear: 60, gpusPerRun: 8,
       currentAccuracy: 88
@@ -1014,7 +1001,6 @@
     agriculture: {
       numDataScientists: 4, salary: 130, dataWorkPercent: 65,
       numImages: 80000, modality: 'segmentation', annotationsPerImage: 6,
-      labelAccuracy: 85, existingLabelPct: 50,
       costPerAnnotation: 0.06,
       trainingHours: 6, gpuCostPerHour: 3.50, trainingRunsPerYear: 40, gpusPerRun: 2,
       currentAccuracy: 78
@@ -1022,7 +1008,6 @@
     medical: {
       numDataScientists: 6, salary: 180, dataWorkPercent: 50,
       numImages: 100000, modality: 'segmentation', annotationsPerImage: 3,
-      labelAccuracy: 93, existingLabelPct: 100,
       costPerAnnotation: 0.10,
       trainingHours: 16, gpuCostPerHour: 5.00, trainingRunsPerYear: 100, gpusPerRun: 4,
       currentAccuracy: 86
@@ -1030,7 +1015,6 @@
     startup: {
       numDataScientists: 3, salary: 140, dataWorkPercent: 70,
       numImages: 30000, modality: 'detection', annotationsPerImage: 5,
-      labelAccuracy: 87, existingLabelPct: 40,
       costPerAnnotation: 0.04,
       trainingHours: 4, gpuCostPerHour: 3.50, trainingRunsPerYear: 100, gpusPerRun: 1,
       currentAccuracy: 80
@@ -1038,7 +1022,6 @@
     enterprise: {
       numDataScientists: 15, salary: 165, dataWorkPercent: 55,
       numImages: 1000000, modality: 'detection', annotationsPerImage: 10,
-      labelAccuracy: 91, existingLabelPct: 100,
       costPerAnnotation: 0.06,
       trainingHours: 20, gpuCostPerHour: 4.00, trainingRunsPerYear: 120, gpusPerRun: 8,
       currentAccuracy: 87
@@ -1056,7 +1039,7 @@
     // Set all input values
     const fields = [
       'numDataScientists', 'salary', 'dataWorkPercent', 'numImages',
-      'annotationsPerImage', 'labelAccuracy', 'existingLabelPct', 'costPerAnnotation',
+      'annotationsPerImage', 'costPerAnnotation',
       'trainingHours', 'gpuCostPerHour',
       'trainingRunsPerYear', 'gpusPerRun', 'currentAccuracy'
     ];
@@ -1092,8 +1075,6 @@
     const numImages = val('numImages');
     const modality = document.getElementById('modality').value;
     const annPerImage = val('annotationsPerImage');
-    const labelAcc = val('labelAccuracy') / 100;
-    const existingLabelPct = val('existingLabelPct') / 100;
     const costPerAnn = val('costPerAnnotation');
     const totalAnnotations = numImages * annPerImage;
     const trainHours = val('trainingHours');
@@ -1112,29 +1093,12 @@
 
     // ──────────────────────────────────────────
     // 2. LABELING COST SAVINGS
-    // Cost per annotation already reflects modality (no separate multiplier)
-    //
-    // Label work = unlabeled annotations + mislabeled annotations
-    //   unlabeled = totalAnnotations * (1 - existingLabelPct)
-    //   mislabeled = totalAnnotations * existingLabelPct * (1 - labelAccuracy)
-    // 3LC saves labelEff of the total label work cost
+    // All annotations are labeling work done with 3LC (40x faster)
     // ──────────────────────────────────────────
     const labelEff = improvements.labelingEfficiency[modality];
-
-    const unlabeledCount = totalAnnotations * (1 - existingLabelPct);
-    const mislabeledCount = totalAnnotations * existingLabelPct * (1 - labelAcc);
-    const labelWorkCount = unlabeledCount + mislabeledCount;
-    const labelWorkCost = labelWorkCount * costPerAnn;
-    const labelingSaving = labelWorkCost * labelEff;
-
-    let labelingDetail = '';
-    if (existingLabelPct === 0) {
-      labelingDetail = `40x faster labeling on ${totalAnnotations.toLocaleString()} unlabeled annotations. Save ~${Math.round(labelEff * 100)}% of labeling cost.`;
-    } else if (existingLabelPct >= 1) {
-      labelingDetail = `${Math.round((1 - labelAcc) * 100)}% of ${totalAnnotations.toLocaleString()} annotations need relabeling. 40x faster correction via bulk review.`;
-    } else {
-      labelingDetail = `${unlabeledCount.toLocaleString()} unlabeled + ${Math.round(mislabeledCount).toLocaleString()} mislabeled annotations to fix. 40x faster with 3LC.`;
-    }
+    const totalLabelCost = totalAnnotations * costPerAnn;
+    const labelingSaving = totalLabelCost * labelEff;
+    const labelingDetail = `40x faster labeling on ${totalAnnotations.toLocaleString()} annotations. Save ~${Math.round(labelEff * 100)}% of labeling cost.`;
 
     // ──────────────────────────────────────────
     // 3. TRAINING COMPUTE SAVINGS
