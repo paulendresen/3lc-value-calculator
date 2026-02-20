@@ -742,12 +742,7 @@
         <div class="subtitle" id="monthlySavings"></div>
       </div>
 
-      <div class="roi-row" style="grid-template-columns: 1fr 1fr 1fr;">
-        <div class="roi-badge">
-          <div class="roi-label">Payback</div>
-          <div class="roi-value" id="paybackWeeks">-</div>
-          <div class="roi-sub">estimated</div>
-        </div>
+      <div class="roi-row" style="grid-template-columns: 1fr 1fr;">
         <div class="roi-badge">
           <div class="roi-label">Hours Saved</div>
           <div class="roi-value" id="hoursSaved">-</div>
@@ -1042,20 +1037,6 @@
     document.getElementById('accuracyGainSub').textContent = `${(currentAcc * 100).toFixed(0)}% \u2192 ~${newAccuracy.toFixed(1)}%`;
 
     // Payback
-    const estimatedAnnualCost = 50000;
-    if (total > 0) {
-      const paybackMonths = (estimatedAnnualCost / total) * 12;
-      if (paybackMonths < 1) {
-        document.getElementById('paybackWeeks').textContent = '< 1 mo';
-      } else if (paybackMonths < 12) {
-        document.getElementById('paybackWeeks').textContent = Math.round(paybackMonths) + ' mo';
-      } else {
-        document.getElementById('paybackWeeks').textContent = (paybackMonths / 12).toFixed(1) + ' yr';
-      }
-    } else {
-      document.getElementById('paybackWeeks').textContent = '-';
-    }
-
     // Render breakdown cards (dollar savings only)
     const maxSaving = Math.max(productivitySaving, labelingSaving, trainingSaving, datasetSaving, 1);
 
