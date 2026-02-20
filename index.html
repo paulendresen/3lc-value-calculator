@@ -809,9 +809,19 @@
         </div>
       </div>
 
+      <!-- Models -->
+      <div class="card">
+        <h2><span class="icon icon-green">&#129504;</span> Models</h2>
+        <div class="field">
+          <label>Models per Year</label>
+          <input type="number" id="numModels" value="3" min="1" max="100" oninput="calculate()">
+          <div class="hint">Distinct models trained, retrained, or iterated on per year</div>
+        </div>
+      </div>
+
       <!-- Dataset -->
       <div class="card">
-        <h2><span class="icon icon-amber">&#128451;</span> Dataset Per Data Scientist</h2>
+        <h2><span class="icon icon-amber">&#128451;</span> Dataset Per Model</h2>
         <div class="row">
           <div class="field">
             <label>Number of Images</label>
@@ -845,7 +855,7 @@
 
       <!-- Training & Compute -->
       <div class="card">
-        <h2><span class="icon icon-blue">&#9889;</span> Training &amp; Compute Per Data Scientist</h2>
+        <h2><span class="icon icon-blue">&#9889;</span> Training &amp; Compute Per Model</h2>
         <div class="row">
           <div class="field">
             <label>Training Time (hours/run)</label>
@@ -1029,42 +1039,42 @@
   // ── Presets ──
   const presets = {
     energy: {
-      numDataScientists: 8, salary: 160,
+      numDataScientists: 8, salary: 160, numModels: 5,
       numImages: 100000, modality: 'detection', annotationsPerImage: 8,
       costPerAnnotation: 0.10,
       trainingHours: 8, gpuCostPerHour: 3.50, trainingRunsPerYear: 200, gpusPerRun: 2,
       currentAccuracy: 82
     },
     automotive: {
-      numDataScientists: 10, salary: 170,
+      numDataScientists: 10, salary: 170, numModels: 6,
       numImages: 100000, modality: 'detection', annotationsPerImage: 12,
       costPerAnnotation: 0.08,
       trainingHours: 8, gpuCostPerHour: 3.50, trainingRunsPerYear: 200, gpusPerRun: 2,
       currentAccuracy: 88
     },
     agriculture: {
-      numDataScientists: 4, salary: 130,
+      numDataScientists: 4, salary: 130, numModels: 2,
       numImages: 80000, modality: 'segmentation', annotationsPerImage: 6,
       costPerAnnotation: 0.06,
       trainingHours: 8, gpuCostPerHour: 3.50, trainingRunsPerYear: 200, gpusPerRun: 2,
       currentAccuracy: 78
     },
     medical: {
-      numDataScientists: 6, salary: 180,
+      numDataScientists: 6, salary: 180, numModels: 4,
       numImages: 100000, modality: 'segmentation', annotationsPerImage: 3,
       costPerAnnotation: 0.10,
       trainingHours: 8, gpuCostPerHour: 3.50, trainingRunsPerYear: 200, gpusPerRun: 2,
       currentAccuracy: 86
     },
     startup: {
-      numDataScientists: 3, salary: 140,
+      numDataScientists: 3, salary: 140, numModels: 2,
       numImages: 30000, modality: 'detection', annotationsPerImage: 5,
       costPerAnnotation: 0.04,
       trainingHours: 8, gpuCostPerHour: 3.50, trainingRunsPerYear: 200, gpusPerRun: 2,
       currentAccuracy: 80
     },
     enterprise: {
-      numDataScientists: 15, salary: 165,
+      numDataScientists: 15, salary: 165, numModels: 8,
       numImages: 100000, modality: 'detection', annotationsPerImage: 10,
       costPerAnnotation: 0.06,
       trainingHours: 8, gpuCostPerHour: 3.50, trainingRunsPerYear: 200, gpusPerRun: 2,
@@ -1082,7 +1092,7 @@
 
     // Set all input values
     const fields = [
-      'numDataScientists', 'salary', 'numImages',
+      'numDataScientists', 'salary', 'numModels', 'numImages',
       'annotationsPerImage', 'costPerAnnotation',
       'trainingHours', 'gpuCostPerHour',
       'trainingRunsPerYear', 'gpusPerRun', 'currentAccuracy'
@@ -1119,7 +1129,8 @@
     const modality = document.getElementById('modality').value;
     const annPerImage = val('annotationsPerImage');
     const costPerAnn = val('costPerAnnotation');
-    const totalAnnotations = numImages * annPerImage * numDS;
+    const numModels = val('numModels');
+    const totalAnnotations = numImages * annPerImage * numModels;
     const trainHours = val('trainingHours');
     const gpuCost = val('gpuCostPerHour');
     const runsPerYear = val('trainingRunsPerYear');
@@ -1145,7 +1156,7 @@
     // ──────────────────────────────────────────
     // 3. TRAINING COMPUTE SAVINGS
     // ──────────────────────────────────────────
-    const annualComputeCost = trainHours * gpuCost * gpusPerRun * runsPerYear * numDS;
+    const annualComputeCost = trainHours * gpuCost * gpusPerRun * runsPerYear * numModels;
     const datasetReductionSaving = annualComputeCost * improvements.datasetReduction;
     const fewerEpochsSaving = (annualComputeCost - datasetReductionSaving) * improvements.fewerEpochsFactor;
     const trainingSaving = datasetReductionSaving + fewerEpochsSaving;
