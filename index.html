@@ -978,6 +978,15 @@
     if (cost !== undefined) {
       document.getElementById('costPerAnnotation').value = cost;
     }
+    const annInput = document.getElementById('annotationsPerImage');
+    if (modality === 'classification') {
+      annInput.value = 1;
+      annInput.max = 1;
+      annInput.disabled = true;
+    } else {
+      annInput.max = 500;
+      annInput.disabled = false;
+    }
   }
 
   // Default cost per annotation by modality (market research, Feb 2026)
