@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3LC Value Calculator - Estimate Your ROI</title>
+<style>
+  :root {
+    --primary: #6C3AED;
+    --primary-light: #8B5CF6;
+    --primary-dark: #5B21B6;
+    --accent: #F59E0B;
+    --accent-light: #FCD34D;
+    --green: #10B981;
+    --green-dark: #059669;
+    --red: #EF4444;
+    --bg: #0F0F1A;
+    --bg-card: #1A1A2E;
+    --bg-card-hover: #1E1E35;
+    --bg-input: #16162A;
+    --border: #2D2D4A;
+    --text: #E2E8F0;
+    --text-muted: #94A3B8;
+    --text-dim: #64748B;
+    --glow: rgba(108, 58, 237, 0.3);
+    --glow-green: rgba(16, 185, 129, 0.3);
+    --glow-accent: rgba(245, 158, 11, 0.2);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(108, 58, 237, 0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(245, 158, 11, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    padding: 48px 0 32px;
+    text-align: center;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .logo-icon {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon img {
+    height: 48px;
+    width: auto;
+  }
+
+  .logo-text {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text), var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  header h1 {
+    font-size: 40px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  header h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  header p {
+    color: var(--text-muted);
+    font-size: 18px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 48px;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* Sections */
+  .input-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+  }
+
+  .card h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+  }
+
+  .card h2 .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .icon-purple { background: rgba(108, 58, 237, 0.15); }
+  .icon-amber { background: rgba(245, 158, 11, 0.15); }
+  .icon-green { background: rgba(16, 185, 129, 0.15); }
+  .icon-blue { background: rgba(59, 130, 246, 0.15); }
+
+  /* Form Elements */
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field:last-child {
+    margin-bottom: 0;
+  }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .field .hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--glow);
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .toggle-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .toggle-btn.active {
+    background: rgba(108, 58, 237, 0.15);
+    border-color: var(--primary);
+    color: var(--primary-light);
+  }
+
+  .toggle-btn:hover:not(.active) {
+    border-color: var(--text-dim);
+    color: var(--text);
+  }
+
+  /* Results Panel */
+  .results-panel {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .total-savings {
+    background: linear-gradient(135deg, var(--bg-card), rgba(108, 58, 237, 0.08));
+    border: 1px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 4px 40px var(--glow);
+  }
+
+  .total-savings .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+
+  .total-savings .amount {
+    font-size: 52px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--green), #34D399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .total-savings .period {
+    font-size: 16px;
+    color: var(--text-muted);
+  }
+
+  .total-savings .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 12px;
+  }
+
+  /* Breakdown Cards */
+  .breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .saving-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all 0.3s;
+  }
+
+  .saving-card:hover {
+    border-color: var(--green);
+    box-shadow: 0 2px 20px var(--glow-green);
+  }
+
+  .saving-card .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .saving-card .category {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .saving-card .category .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .saving-card .saved {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  .saving-card .detail {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .saving-card .bar {
+    height: 4px;
+    background: var(--bg-input);
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+
+  .saving-card .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  /* Colors for each category */
+  .cat-labeling .dot, .cat-labeling .bar-fill { background: var(--primary-light); }
+  .cat-training .dot, .cat-training .bar-fill { background: var(--accent); }
+  .cat-productivity .dot, .cat-productivity .bar-fill { background: var(--green); }
+  .cat-accuracy .dot, .cat-accuracy .bar-fill { background: #3B82F6; }
+  .cat-dataset .dot, .cat-dataset .bar-fill { background: #EC4899; }
+
+  /* ROI Badge */
+  .roi-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .roi-badge {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .roi-badge .roi-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .roi-badge .roi-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .roi-badge .roi-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Footer */
+  .assumptions {
+    margin-bottom: 48px;
+  }
+
+  .assumptions-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .assumptions-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .assumptions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 8px;
+  }
+
+  .assumption-item {
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .assumption-item::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: var(--text-dim);
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+  }
+
+  footer p {
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  footer a {
+    color: var(--primary-light);
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    text-decoration: underline;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .saving-card {
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .saving-card:nth-child(2) { animation-delay: 0.05s; }
+  .saving-card:nth-child(3) { animation-delay: 0.1s; }
+  .saving-card:nth-child(4) { animation-delay: 0.15s; }
+  .saving-card:nth-child(5) { animation-delay: 0.2s; }
+
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px var(--glow);
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px var(--glow);
+  }
+
+  .separator {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* Presets Bar */
+  .presets {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+
+  .presets-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    align-self: center;
+    margin-right: 4px;
+  }
+
+  .preset-btn {
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .preset-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary-light);
+    background: rgba(108, 58, 237, 0.08);
+  }
+
+  .preset-btn.active {
+    border-color: var(--primary);
+    color: var(--primary-light);
+    background: rgba(108, 58, 237, 0.12);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><img src="https://3lc.ai/wp-content/uploads/2025/02/3LC-RegularDrk.svg" alt="3LC Logo"></div>
+      <div class="logo-text">Value Calculator</div>
+    </div>
+    <h1>Estimate Your <span>ROI with 3LC</span></h1>
+    <p>See how much time, money, and compute you could save by adopting 3LC's data-centric AI platform for your computer vision workflows.</p>
+  </header>
+
+  <!-- Presets -->
+  <div class="presets">
+    <span class="presets-label">Quick presets:</span>
+    <button class="preset-btn" onclick="applyPreset('energy')">Energy &amp; Inspection</button>
+    <button class="preset-btn" onclick="applyPreset('automotive')">Automotive</button>
+    <button class="preset-btn" onclick="applyPreset('agriculture')">Agriculture &amp; Robotics</button>
+    <button class="preset-btn" onclick="applyPreset('medical')">Medical Imaging</button>
+    <button class="preset-btn" onclick="applyPreset('startup')">ML Startup</button>
+    <button class="preset-btn" onclick="applyPreset('enterprise')">Enterprise Team</button>
+  </div>
+
+  <div class="layout">
+    <!-- INPUT PANEL -->
+    <div class="input-panel">
+
+      <!-- Team & Cost -->
+      <div class="card">
+        <h2><span class="icon icon-purple">&#128101;</span> Team &amp; Cost</h2>
+        <div class="row">
+          <div class="field">
+            <label>Data Scientists</label>
+            <input type="number" id="numDataScientists" value="5" min="1" max="200" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>Avg. Salary ($K / year)</label>
+            <input type="number" id="salary" value="150" min="30" max="1000" oninput="calculate()">
+          </div>
+        </div>
+        <div class="field">
+          <label>% Time Spent on Data Work</label>
+          <input type="number" id="dataWorkPercent" value="60" min="10" max="100" oninput="calculate()">
+          <div class="hint">Includes labeling, debugging, data exploration, and curation</div>
+        </div>
+      </div>
+
+      <!-- Dataset -->
+      <div class="card">
+        <h2><span class="icon icon-amber">&#128451;</span> Dataset</h2>
+        <div class="row">
+          <div class="field">
+            <label>Number of Images</label>
+            <input type="number" id="numImages" value="50000" min="100" max="100000000" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>CV Task / Modality</label>
+            <select id="modality" onchange="calculate()">
+              <option value="classification">Classification</option>
+              <option value="detection" selected>Object Detection (BBox)</option>
+              <option value="segmentation">Instance Segmentation</option>
+              <option value="semantic">Semantic Segmentation</option>
+              <option value="pose">Pose Estimation</option>
+              <option value="obb">Oriented Bounding Boxes</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Avg. Annotations / Image</label>
+            <input type="number" id="annotationsPerImage" value="5" min="1" max="500" step="1" oninput="calculate()">
+            <div class="hint">Bounding boxes, masks, or labels per image</div>
+          </div>
+          <div class="field">
+            <label>Current Label Accuracy (%)</label>
+            <input type="number" id="labelAccuracy" value="90" min="50" max="100" oninput="calculate()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Do you have existing labels?</label>
+          <div class="toggle-group">
+            <button class="toggle-btn active" data-field="hasLabels" data-val="yes" onclick="setToggle(this)">Yes, labeled</button>
+            <button class="toggle-btn" data-field="hasLabels" data-val="partial" onclick="setToggle(this)">Partially labeled</button>
+            <button class="toggle-btn" data-field="hasLabels" data-val="no" onclick="setToggle(this)">Unlabeled</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Labeling -->
+      <div class="card">
+        <h2><span class="icon icon-green">&#9997;&#65039;</span> Labeling</h2>
+        <div class="row">
+          <div class="field">
+            <label>Cost per Annotation ($)</label>
+            <input type="number" id="costPerAnnotation" value="0.10" min="0.01" max="50" step="0.01" oninput="calculate()">
+            <div class="hint">Internal or outsourced per-label cost</div>
+          </div>
+          <div class="field">
+            <label>New Labels Needed / Year</label>
+            <input type="number" id="newLabelsPerYear" value="100000" min="0" max="100000000" oninput="calculate()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Training & Compute -->
+      <div class="card">
+        <h2><span class="icon icon-blue">&#9889;</span> Training &amp; Compute</h2>
+        <div class="row">
+          <div class="field">
+            <label>Training Time (hours/run)</label>
+            <input type="number" id="trainingHours" value="8" min="0.5" max="500" step="0.5" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>GPU Cost ($/hour)</label>
+            <input type="number" id="gpuCostPerHour" value="3.50" min="0.10" max="100" step="0.1" oninput="calculate()">
+            <div class="hint">e.g. A100: ~$3.50/hr, H100: ~$5/hr</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Training Runs / Year</label>
+            <input type="number" id="trainingRunsPerYear" value="50" min="1" max="2000" oninput="calculate()">
+            <div class="hint">Including retraining &amp; experiments</div>
+          </div>
+          <div class="field">
+            <label>GPUs per Run</label>
+            <input type="number" id="gpusPerRun" value="2" min="1" max="128" oninput="calculate()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Model Performance -->
+      <div class="card">
+        <h2><span class="icon icon-blue">&#127919;</span> Model Performance</h2>
+        <div class="field">
+          <label>Current Model Accuracy (%)</label>
+          <input type="number" id="currentAccuracy" value="85" min="10" max="99.9" step="0.1" oninput="calculate()">
+          <div class="hint">mAP, F1, or your primary metric</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS PANEL -->
+    <div class="results-panel">
+      <div class="total-savings">
+        <div class="label">Estimated Annual Savings</div>
+        <div class="amount" id="totalSavings">$0</div>
+        <div class="period">per year</div>
+        <div class="subtitle" id="monthlySavings"></div>
+      </div>
+
+      <div class="roi-row" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="roi-badge">
+          <div class="roi-label">Payback</div>
+          <div class="roi-value" id="paybackWeeks">-</div>
+          <div class="roi-sub">estimated</div>
+        </div>
+        <div class="roi-badge">
+          <div class="roi-label">Hours Saved</div>
+          <div class="roi-value" id="hoursSaved">-</div>
+          <div class="roi-sub">per year</div>
+        </div>
+        <div class="roi-badge">
+          <div class="roi-label">Accuracy Gain</div>
+          <div class="roi-value" id="accuracyGain" style="color: #3B82F6;">-</div>
+          <div class="roi-sub" id="accuracyGainSub">expected improvement</div>
+        </div>
+      </div>
+
+      <div class="breakdown" id="breakdown"></div>
+    </div>
+  </div>
+
+  <!-- Assumptions -->
+  <div class="assumptions">
+    <div class="assumptions-card">
+      <h3>&#128218; Methodology &amp; Assumptions</h3>
+      <div class="assumptions-grid">
+        <div class="assumption-item">33% data scientist productivity gain (based on Equinor case study: work completed in 66% of the time)</div>
+        <div class="assumption-item">40x labeling acceleration vs. manual human labeling, while achieving higher accuracy than both manual and auto-labeling</div>
+        <div class="assumption-item">Error rate cut in half on average through data curation and label quality improvement (observed across 3LC customers)</div>
+        <div class="assumption-item">Dataset reduction of 20-40% through identification and removal of redundant/low-value samples</div>
+        <div class="assumption-item">75% training time reduction achievable via cleaner, smaller datasets (client-reported)</div>
+        <div class="assumption-item">Labeling savings scale with annotation complexity: segmentation masks cost 3-5x more than bounding boxes</div>
+        <div class="assumption-item">Estimates are illustrative. Actual results vary by dataset quality, team size, and workflow maturity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <a href="https://3lc.ai" target="_blank" class="cta-btn">
+      Get Started with 3LC &rarr;
+    </a>
+  </div>
+
+  <div class="separator"></div>
+
+  <footer>
+    <p>Built by <a href="https://3lc.ai" target="_blank">3LC</a> &mdash; Better, smaller, faster AI models through data-centric AI.</p>
+  </footer>
+</div>
+
+<script>
+  // State
+  const toggleState = {
+    hasLabels: 'yes'
+  };
+
+  function setToggle(btn) {
+    const field = btn.dataset.field;
+    const v = btn.dataset.val;
+    toggleState[field] = v;
+    btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    calculate();
+  }
+
+  function setToggleByValue(field, value) {
+    const btns = document.querySelectorAll(`[data-field="${field}"]`);
+    btns.forEach(b => {
+      b.classList.toggle('active', b.dataset.val === value);
+    });
+    toggleState[field] = value;
+  }
+
+  // Modality complexity multipliers for labeling cost/time
+  const modalityMultiplier = {
+    classification: 0.3,
+    detection: 1.0,
+    segmentation: 3.0,
+    semantic: 2.5,
+    pose: 2.0,
+    obb: 1.3
+  };
+
+  // 3LC improvement factors (based on observed customer results)
+  const improvements = {
+    // Data scientist productivity gain (Equinor: 33% faster -> saves 33% of time)
+    productivityGain: 0.33,
+
+    // Labeling: 40x acceleration vs. manual human labeling, with higher accuracy
+    // We model this as saving (1 - 1/40) = 97.5% of labeling cost
+    labelingEfficiency: {
+      classification: 0.95,
+      detection: 0.975,
+      segmentation: 0.975,
+      semantic: 0.975,
+      pose: 0.96,
+      obb: 0.97
+    },
+
+    // Training compute reduction via dataset curation
+    datasetReduction: 0.25,
+    fewerEpochsFactor: 0.20,
+
+    // Accuracy: on average, error rate is cut in half through data curation
+    // This is modality-independent — we halve (1 - currentAccuracy)
+    errorReductionFactor: 0.50
+  };
+
+  // ── Presets ──
+  const presets = {
+    energy: {
+      numDataScientists: 8, salary: 160, dataWorkPercent: 55,
+      numImages: 200000, modality: 'detection', annotationsPerImage: 8,
+      labelAccuracy: 88, hasLabels: 'yes',
+      costPerAnnotation: 0.15, newLabelsPerYear: 150000,
+      trainingHours: 12, gpuCostPerHour: 3.50, trainingRunsPerYear: 80, gpusPerRun: 4,
+      currentAccuracy: 82
+    },
+    automotive: {
+      numDataScientists: 10, salary: 170, dataWorkPercent: 50,
+      numImages: 500000, modality: 'detection', annotationsPerImage: 12,
+      labelAccuracy: 92, hasLabels: 'yes',
+      costPerAnnotation: 0.12, newLabelsPerYear: 300000,
+      trainingHours: 24, gpuCostPerHour: 5.00, trainingRunsPerYear: 60, gpusPerRun: 8,
+      currentAccuracy: 88
+    },
+    agriculture: {
+      numDataScientists: 4, salary: 130, dataWorkPercent: 65,
+      numImages: 80000, modality: 'segmentation', annotationsPerImage: 6,
+      labelAccuracy: 85, hasLabels: 'partial',
+      costPerAnnotation: 0.20, newLabelsPerYear: 50000,
+      trainingHours: 6, gpuCostPerHour: 3.50, trainingRunsPerYear: 40, gpusPerRun: 2,
+      currentAccuracy: 78
+    },
+    medical: {
+      numDataScientists: 6, salary: 180, dataWorkPercent: 50,
+      numImages: 100000, modality: 'segmentation', annotationsPerImage: 3,
+      labelAccuracy: 93, hasLabels: 'yes',
+      costPerAnnotation: 0.50, newLabelsPerYear: 80000,
+      trainingHours: 16, gpuCostPerHour: 5.00, trainingRunsPerYear: 100, gpusPerRun: 4,
+      currentAccuracy: 86
+    },
+    startup: {
+      numDataScientists: 3, salary: 140, dataWorkPercent: 70,
+      numImages: 30000, modality: 'detection', annotationsPerImage: 5,
+      labelAccuracy: 87, hasLabels: 'partial',
+      costPerAnnotation: 0.08, newLabelsPerYear: 80000,
+      trainingHours: 4, gpuCostPerHour: 3.50, trainingRunsPerYear: 100, gpusPerRun: 1,
+      currentAccuracy: 80
+    },
+    enterprise: {
+      numDataScientists: 15, salary: 165, dataWorkPercent: 55,
+      numImages: 1000000, modality: 'detection', annotationsPerImage: 10,
+      labelAccuracy: 91, hasLabels: 'yes',
+      costPerAnnotation: 0.10, newLabelsPerYear: 500000,
+      trainingHours: 20, gpuCostPerHour: 4.00, trainingRunsPerYear: 120, gpusPerRun: 8,
+      currentAccuracy: 87
+    }
+  };
+
+  function applyPreset(name) {
+    const p = presets[name];
+    if (!p) return;
+
+    // Highlight active preset
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // Set all input values
+    const fields = [
+      'numDataScientists', 'salary', 'dataWorkPercent', 'numImages',
+      'annotationsPerImage', 'labelAccuracy', 'costPerAnnotation',
+      'newLabelsPerYear', 'trainingHours', 'gpuCostPerHour',
+      'trainingRunsPerYear', 'gpusPerRun', 'currentAccuracy'
+    ];
+    fields.forEach(f => {
+      const el = document.getElementById(f);
+      if (el && p[f] !== undefined) el.value = p[f];
+    });
+
+    // Set modality dropdown
+    if (p.modality) document.getElementById('modality').value = p.modality;
+
+    // Set toggle
+    if (p.hasLabels) setToggleByValue('hasLabels', p.hasLabels);
+
+    calculate();
+  }
+
+  function val(id) {
+    return parseFloat(document.getElementById(id).value) || 0;
+  }
+
+  function fmt(n) {
+    if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return '$' + Math.round(n).toLocaleString();
+    return '$' + n.toFixed(0);
+  }
+
+  function fmtFull(n) {
+    return '$' + Math.round(n).toLocaleString();
+  }
+
+  function calculate() {
+    const numDS = val('numDataScientists');
+    const salaryK = val('salary');
+    const dataWorkPct = val('dataWorkPercent') / 100;
+    const numImages = val('numImages');
+    const modality = document.getElementById('modality').value;
+    const annPerImage = val('annotationsPerImage');
+    const labelAcc = val('labelAccuracy') / 100;
+    const hasLabels = toggleState.hasLabels;
+    const costPerAnn = val('costPerAnnotation');
+    const newLabelsYear = val('newLabelsPerYear');
+    const trainHours = val('trainingHours');
+    const gpuCost = val('gpuCostPerHour');
+    const runsPerYear = val('trainingRunsPerYear');
+    const gpusPerRun = val('gpusPerRun');
+    const currentAcc = val('currentAccuracy') / 100;
+
+    const modMult = modalityMultiplier[modality];
+
+    // ──────────────────────────────────────────
+    // 1. DATA SCIENTIST PRODUCTIVITY SAVINGS
+    // ──────────────────────────────────────────
+    const totalSalary = numDS * salaryK * 1000;
+    const dataWorkCost = totalSalary * dataWorkPct;
+    const productivitySaving = dataWorkCost * improvements.productivityGain;
+    const hoursSavedProductivity = numDS * 2080 * dataWorkPct * improvements.productivityGain;
+
+    // ──────────────────────────────────────────
+    // 2. LABELING COST SAVINGS
+    // ──────────────────────────────────────────
+    let labelingSaving = 0;
+    let labelingDetail = '';
+    const labelEff = improvements.labelingEfficiency[modality];
+
+    if (hasLabels === 'no') {
+      const totalLabelCost = numImages * annPerImage * costPerAnn * modMult;
+      labelingSaving = totalLabelCost * labelEff;
+      labelingDetail = `40x faster labeling with higher accuracy than manual annotation. Save ~${Math.round(labelEff * 100)}% on ${numImages.toLocaleString()} images.`;
+    } else if (hasLabels === 'partial') {
+      const existingLabelFixCost = numImages * annPerImage * (1 - labelAcc) * costPerAnn * modMult * 0.5;
+      const newLabelCost = newLabelsYear * costPerAnn * modMult;
+      labelingSaving = (existingLabelFixCost + newLabelCost) * labelEff;
+      labelingDetail = `40x labeling acceleration for new annotations + bulk error correction. Higher accuracy than manual labeling.`;
+    } else {
+      const labelErrorRate = 1 - labelAcc;
+      const errorFixCost = numImages * annPerImage * labelErrorRate * costPerAnn * modMult * 0.3;
+      const newLabelCost = newLabelsYear * costPerAnn * modMult;
+      labelingSaving = (errorFixCost + newLabelCost) * labelEff;
+      labelingDetail = `Fix ~${Math.round(labelErrorRate * 100)}% label errors via bulk corrections + 40x faster annotation for ${newLabelsYear.toLocaleString()} new labels/year.`;
+    }
+
+    // ──────────────────────────────────────────
+    // 3. TRAINING COMPUTE SAVINGS
+    // ──────────────────────────────────────────
+    const annualComputeCost = trainHours * gpuCost * gpusPerRun * runsPerYear;
+    const datasetReductionSaving = annualComputeCost * improvements.datasetReduction;
+    const fewerEpochsSaving = (annualComputeCost - datasetReductionSaving) * improvements.fewerEpochsFactor;
+    const trainingSaving = datasetReductionSaving + fewerEpochsSaving;
+    const pctTrainSaved = annualComputeCost > 0 ? ((trainingSaving / annualComputeCost) * 100).toFixed(0) : 0;
+
+    // ──────────────────────────────────────────
+    // 4. DATASET EFFICIENCY (smaller = faster iteration)
+    // ──────────────────────────────────────────
+    const iterationValue = runsPerYear * trainHours * 0.15 * gpuCost * gpusPerRun;
+    const storageSaving = numImages * 0.0001 * improvements.datasetReduction;
+    const datasetSaving = iterationValue + storageSaving;
+
+    // ──────────────────────────────────────────
+    // 5. ACCURACY IMPROVEMENT (non-dollar, shown separately)
+    // Error rate cut in half on average through data curation
+    // ──────────────────────────────────────────
+    const currentErrorRate = 1 - currentAcc;
+    const newErrorRate = currentErrorRate * improvements.errorReductionFactor;
+    const newAccuracy = (1 - newErrorRate) * 100;
+    const scaledImprovement = newAccuracy - (currentAcc * 100);
+
+    // ──────────────────────────────────────────
+    // TOTALS (dollar savings only - no accuracy speculation)
+    // ──────────────────────────────────────────
+    const total = productivitySaving + labelingSaving + trainingSaving + datasetSaving;
+    const totalHoursSaved = hoursSavedProductivity + (salaryK > 0 ? (labelingSaving / (salaryK * 1000 / 2080)) : 0);
+
+    // Render total
+    document.getElementById('totalSavings').textContent = fmt(total);
+    document.getElementById('monthlySavings').textContent = `${fmtFull(total / 12)} / month`;
+
+    // Hours saved
+    const hrsSaved = Math.round(totalHoursSaved);
+    document.getElementById('hoursSaved').textContent = hrsSaved > 9999 ? Math.round(hrsSaved / 1000) + 'K' : hrsSaved.toLocaleString();
+
+    // Accuracy gain badge
+    document.getElementById('accuracyGain').textContent = '+' + scaledImprovement.toFixed(1) + 'pp';
+    document.getElementById('accuracyGainSub').textContent = `${(currentAcc * 100).toFixed(0)}% \u2192 ~${newAccuracy.toFixed(1)}%`;
+
+    // Payback
+    const estimatedAnnualCost = 50000;
+    if (total > 0) {
+      const paybackMonths = (estimatedAnnualCost / total) * 12;
+      if (paybackMonths < 1) {
+        document.getElementById('paybackWeeks').textContent = '< 1 mo';
+      } else if (paybackMonths < 12) {
+        document.getElementById('paybackWeeks').textContent = Math.round(paybackMonths) + ' mo';
+      } else {
+        document.getElementById('paybackWeeks').textContent = (paybackMonths / 12).toFixed(1) + ' yr';
+      }
+    } else {
+      document.getElementById('paybackWeeks').textContent = '-';
+    }
+
+    // Render breakdown cards (dollar savings only)
+    const maxSaving = Math.max(productivitySaving, labelingSaving, trainingSaving, datasetSaving, 1);
+
+    const cards = [
+      {
+        cat: 'cat-productivity',
+        label: 'Data Scientist Productivity',
+        amount: productivitySaving,
+        detail: `${numDS} data scientists work 33% faster on data tasks (Equinor benchmark). Saves ~${Math.round(hoursSavedProductivity).toLocaleString()} hours/year.`,
+        pct: productivitySaving / maxSaving * 100
+      },
+      {
+        cat: 'cat-labeling',
+        label: 'Labeling & Annotation',
+        amount: labelingSaving,
+        detail: labelingDetail,
+        pct: labelingSaving / maxSaving * 100
+      },
+      {
+        cat: 'cat-training',
+        label: 'Training Compute',
+        amount: trainingSaving,
+        detail: `~${pctTrainSaved}% compute reduction: ${Math.round(improvements.datasetReduction * 100)}% smaller curated dataset + ${Math.round(improvements.fewerEpochsFactor * 100)}% fewer epochs with cleaner data.`,
+        pct: trainingSaving / maxSaving * 100
+      },
+      {
+        cat: 'cat-dataset',
+        label: 'Faster Iteration Cycles',
+        amount: datasetSaving,
+        detail: `Smaller, curated datasets = faster experiments. Tight edit-retrain loop eliminates manual data export/import overhead.`,
+        pct: datasetSaving / maxSaving * 100
+      }
+    ];
+
+    // Sort by amount descending
+    cards.sort((a, b) => b.amount - a.amount);
+
+    let html = '';
+    for (const c of cards) {
+      html += `
+        <div class="saving-card ${c.cat}">
+          <div class="top">
+            <div class="category"><span class="dot"></span>${c.label}</div>
+            <div class="saved">${fmt(c.amount)}</div>
+          </div>
+          <div class="detail">${c.detail}</div>
+          <div class="bar"><div class="bar-fill" style="width: ${Math.max(c.pct, 2)}%"></div></div>
+        </div>
+      `;
+    }
+
+    // Add accuracy card (non-dollar, informational)
+    html += `
+      <div class="saving-card cat-accuracy">
+        <div class="top">
+          <div class="category"><span class="dot"></span>Expected Accuracy Improvement</div>
+          <div class="saved" style="color: #3B82F6;">+${scaledImprovement.toFixed(1)}pp</div>
+        </div>
+        <div class="detail">On average, 3LC customers see their error rate cut in half through data curation. Your ${(currentAcc * 100).toFixed(0)}% could reach ~${newAccuracy.toFixed(1)}% &mdash; with higher label quality than manual annotation.</div>
+        <div class="bar"><div class="bar-fill" style="width: ${Math.min(scaledImprovement / ((1 - currentAcc) * 100) * 100, 100)}%"></div></div>
+      </div>
+    `;
+
+    document.getElementById('breakdown').innerHTML = html;
+  }
+
+  // Init
+  calculate();
+</script>
+
+</body>
+</html>
