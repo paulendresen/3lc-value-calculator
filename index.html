@@ -796,7 +796,7 @@
           <span class="acc-new" id="accNew">92.5%</span>
         </div>
         <div class="acc-gain-badge" id="accGainBadge">+7.5pp</div>
-        <div class="acc-detail" id="accDetail">Error rate cut in half through data curation — with higher label quality than manual annotation.</div>
+        <div class="acc-detail" id="accDetail">On average, 3LC customers cut their error rate in half through data-centric improvements: fixing labels, adding categories, removing noisy samples, understanding model struggles, weighting samples, and curating exactly the data with the right signal.</div>
       </div>
 
       <div class="total-savings">
@@ -825,7 +825,7 @@
       <div class="assumptions-grid">
         <div class="assumption-item">33% data scientist productivity gain (based on energy major case study: work completed in 66% of the time)</div>
         <div class="assumption-item">40x labeling acceleration vs. manual human labeling, while achieving higher accuracy than both manual and auto-labeling</div>
-        <div class="assumption-item">Error rate cut in half on average through data curation and label quality improvement (observed across 3LC customers)</div>
+        <div class="assumption-item">Error rate cut in half on average through data-centric improvements: label correction, category refinement, sample removal, sample weighting, and targeted data curation (observed across 3LC customers)</div>
         <div class="assumption-item">Dataset reduction of 20-40% through identification and removal of redundant/low-value samples</div>
         <div class="assumption-item">75% training time reduction achievable via cleaner, smaller datasets (client-reported)</div>
         <div class="assumption-item">Labeling savings scale with annotation complexity: segmentation masks cost 3-5x more than bounding boxes</div>
@@ -1094,7 +1094,7 @@
     document.getElementById('accCurrent').textContent = (currentAcc * 100).toFixed(0) + '%';
     document.getElementById('accNew').textContent = '~' + newAccuracy.toFixed(1) + '%';
     document.getElementById('accGainBadge').textContent = '+' + scaledImprovement.toFixed(1) + 'pp';
-    document.getElementById('accDetail').textContent = `Error rate cut in half through data curation — your ${(currentAcc * 100).toFixed(0)}% could reach ~${newAccuracy.toFixed(1)}% with higher label quality than manual annotation.`;
+    document.getElementById('accDetail').textContent = `On average, 3LC customers cut their error rate in half through data-centric improvements: fixing labels, adding categories, removing noisy samples, understanding model struggles, weighting samples, and curating exactly the data with the right signal.`;
 
     // Payback
     // Render breakdown cards (dollar savings only)
