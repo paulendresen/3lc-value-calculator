@@ -800,7 +800,7 @@
         <div class="row">
           <div class="field">
             <label>Data Scientists / ML Engineers</label>
-            <input type="number" id="numDataScientists" value="5" min="1" max="200" oninput="calculate()">
+            <input type="number" id="numDataScientists" value="3" min="1" max="200" oninput="calculate()">
           </div>
           <div class="field">
             <label>Avg. Salary ($K / year)</label>
@@ -811,7 +811,7 @@
 
       <!-- Dataset -->
       <div class="card">
-        <h2><span class="icon icon-amber">&#128451;</span> Dataset</h2>
+        <h2><span class="icon icon-amber">&#128451;</span> Dataset Per Data Scientist</h2>
         <div class="row">
           <div class="field">
             <label>Number of Images</label>
@@ -1110,7 +1110,7 @@
     const modality = document.getElementById('modality').value;
     const annPerImage = val('annotationsPerImage');
     const costPerAnn = val('costPerAnnotation');
-    const totalAnnotations = numImages * annPerImage;
+    const totalAnnotations = numImages * annPerImage * numDS;
     const trainHours = val('trainingHours');
     const gpuCost = val('gpuCostPerHour');
     const runsPerYear = val('trainingRunsPerYear');
