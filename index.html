@@ -710,7 +710,7 @@
           </div>
           <div class="field">
             <label>CV Task / Modality</label>
-            <select id="modality" onchange="calculate()">
+            <select id="modality" onchange="updateCostForModality(); calculate()">
               <option value="classification">Classification</option>
               <option value="detection" selected>Object Detection (BBox)</option>
               <option value="segmentation">Instance Segmentation</option>
@@ -734,15 +734,15 @@
         <div class="row">
           <div class="field">
             <label>Cost per Annotation ($)</label>
-            <input type="number" id="costPerAnnotation" value="0.10" min="0.01" max="50" step="0.01" oninput="calculate()">
-            <div class="hint">Internal or outsourced per-label cost</div>
+            <input type="number" id="costPerAnnotation" value="0.06" min="0.01" max="50" step="0.01" oninput="calculate()">
+            <div class="hint">Per-object cost: $0.02–$0.07 bbox, $0.10–$5.00 mask (modality scales automatically)</div>
           </div>
           <div class="field">
             <label>Do you have existing labels?</label>
             <div class="toggle-group">
               <button class="toggle-btn active" data-field="hasLabels" data-val="yes" onclick="setToggle(this)">Yes, labeled</button>
               <button class="toggle-btn" data-field="hasLabels" data-val="partial" onclick="setToggle(this)">Partially labeled</button>
-              <button class="toggle-btn" data-field="hasLabels" data-val="no" onclick="setToggle(this)">Unlabeled</button>
+              <button class="toggle-btn" data-field="hasLabels" data-val="no" onclick="setToggle(this)">No</button>
             </div>
           </div>
         </div>
@@ -871,14 +871,24 @@
     toggleState[field] = value;
   }
 
-  // Modality complexity multipliers for labeling cost/time
-  const modalityMultiplier = {
-    classification: 0.3,
-    detection: 1.0,
-    segmentation: 3.0,
-    semantic: 2.5,
-    pose: 2.0,
-    obb: 1.3
+  function updateCostForModality() {
+    const modality = document.getElementById('modality').value;
+    const cost = defaultCostByModality[modality];
+    if (cost !== undefined) {
+      document.getElementById('costPerAnnotation').value = cost;
+    }
+  }
+
+  // Default cost per annotation by modality (market research, Feb 2026)
+  // bbox: $0.05–$0.07/obj standard, segmentation: $0.10–$0.84/mask moderate,
+  // complex/industrial segmentation: $0.50–$5.00/mask
+  const defaultCostByModality = {
+    classification: 0.02,
+    detection: 0.06,
+    segmentation: 0.48,
+    semantic: 0.36,
+    pose: 0.18,
+    obb: 0.08
   };
 
   // 3LC improvement factors (based on observed customer results)
@@ -912,7 +922,7 @@
       numDataScientists: 8, salary: 160, dataWorkPercent: 55,
       numImages: 200000, modality: 'detection', annotationsPerImage: 8,
       labelAccuracy: 88, hasLabels: 'yes',
-      costPerAnnotation: 0.15,
+      costPerAnnotation: 0.10,
       trainingHours: 12, gpuCostPerHour: 3.50, trainingRunsPerYear: 80, gpusPerRun: 4,
       currentAccuracy: 82
     },
@@ -920,7 +930,7 @@
       numDataScientists: 10, salary: 170, dataWorkPercent: 50,
       numImages: 500000, modality: 'detection', annotationsPerImage: 12,
       labelAccuracy: 92, hasLabels: 'yes',
-      costPerAnnotation: 0.12,
+      costPerAnnotation: 0.08,
       trainingHours: 24, gpuCostPerHour: 5.00, trainingRunsPerYear: 60, gpusPerRun: 8,
       currentAccuracy: 88
     },
@@ -928,7 +938,7 @@
       numDataScientists: 4, salary: 130, dataWorkPercent: 65,
       numImages: 80000, modality: 'segmentation', annotationsPerImage: 6,
       labelAccuracy: 85, hasLabels: 'partial',
-      costPerAnnotation: 0.20,
+      costPerAnnotation: 0.06,
       trainingHours: 6, gpuCostPerHour: 3.50, trainingRunsPerYear: 40, gpusPerRun: 2,
       currentAccuracy: 78
     },
@@ -936,7 +946,7 @@
       numDataScientists: 6, salary: 180, dataWorkPercent: 50,
       numImages: 100000, modality: 'segmentation', annotationsPerImage: 3,
       labelAccuracy: 93, hasLabels: 'yes',
-      costPerAnnotation: 0.50,
+      costPerAnnotation: 0.10,
       trainingHours: 16, gpuCostPerHour: 5.00, trainingRunsPerYear: 100, gpusPerRun: 4,
       currentAccuracy: 86
     },
@@ -944,7 +954,7 @@
       numDataScientists: 3, salary: 140, dataWorkPercent: 70,
       numImages: 30000, modality: 'detection', annotationsPerImage: 5,
       labelAccuracy: 87, hasLabels: 'partial',
-      costPerAnnotation: 0.08,
+      costPerAnnotation: 0.04,
       trainingHours: 4, gpuCostPerHour: 3.50, trainingRunsPerYear: 100, gpusPerRun: 1,
       currentAccuracy: 80
     },
@@ -952,7 +962,7 @@
       numDataScientists: 15, salary: 165, dataWorkPercent: 55,
       numImages: 1000000, modality: 'detection', annotationsPerImage: 10,
       labelAccuracy: 91, hasLabels: 'yes',
-      costPerAnnotation: 0.10,
+      costPerAnnotation: 0.06,
       trainingHours: 20, gpuCostPerHour: 4.00, trainingRunsPerYear: 120, gpusPerRun: 8,
       currentAccuracy: 87
     }
@@ -1018,8 +1028,6 @@
     const gpusPerRun = val('gpusPerRun');
     const currentAcc = val('currentAccuracy') / 100;
 
-    const modMult = modalityMultiplier[modality];
-
     // ──────────────────────────────────────────
     // 1. DATA SCIENTIST PRODUCTIVITY SAVINGS
     // ──────────────────────────────────────────
@@ -1030,23 +1038,24 @@
 
     // ──────────────────────────────────────────
     // 2. LABELING COST SAVINGS
+    // Cost per annotation already reflects modality (no separate multiplier)
     // ──────────────────────────────────────────
     let labelingSaving = 0;
     let labelingDetail = '';
     const labelEff = improvements.labelingEfficiency[modality];
 
-    const totalLabelCost = totalAnnotations * costPerAnn * modMult;
+    const totalLabelCost = totalAnnotations * costPerAnn;
     if (hasLabels === 'no') {
       labelingSaving = totalLabelCost * labelEff;
       labelingDetail = `40x faster labeling with higher accuracy than manual annotation. Save ~${Math.round(labelEff * 100)}% on ${totalAnnotations.toLocaleString()} annotations.`;
     } else if (hasLabels === 'partial') {
-      const errorFixCost = totalAnnotations * (1 - labelAcc) * costPerAnn * modMult * 0.5;
+      const errorFixCost = totalAnnotations * (1 - labelAcc) * costPerAnn * 0.5;
       const unlabeledCost = totalLabelCost * 0.5;
       labelingSaving = (errorFixCost + unlabeledCost) * labelEff;
       labelingDetail = `40x labeling acceleration for unlabeled data + bulk error correction on existing labels. Higher accuracy than manual labeling.`;
     } else {
       const labelErrorRate = 1 - labelAcc;
-      const errorFixCost = totalAnnotations * labelErrorRate * costPerAnn * modMult * 0.3;
+      const errorFixCost = totalAnnotations * labelErrorRate * costPerAnn * 0.3;
       labelingSaving = errorFixCost * labelEff;
       labelingDetail = `Fix ~${Math.round(labelErrorRate * 100)}% label errors via bulk corrections — 40x faster than manual review.`;
     }
