@@ -764,7 +764,7 @@
     <div class="assumptions-card">
       <h3>&#128218; Methodology &amp; Assumptions</h3>
       <div class="assumptions-grid">
-        <div class="assumption-item">33% data scientist productivity gain (based on Equinor case study: work completed in 66% of the time)</div>
+        <div class="assumption-item">33% data scientist productivity gain (based on energy major case study: work completed in 66% of the time)</div>
         <div class="assumption-item">40x labeling acceleration vs. manual human labeling, while achieving higher accuracy than both manual and auto-labeling</div>
         <div class="assumption-item">Error rate cut in half on average through data curation and label quality improvement (observed across 3LC customers)</div>
         <div class="assumption-item">Dataset reduction of 20-40% through identification and removal of redundant/low-value samples</div>
@@ -824,7 +824,7 @@
 
   // 3LC improvement factors (based on observed customer results)
   const improvements = {
-    // Data scientist productivity gain (Equinor: 33% faster -> saves 33% of time)
+    // Data scientist productivity gain (energy major: 33% faster -> saves 33% of time)
     productivityGain: 0.33,
 
     // Labeling: 40x acceleration vs. manual human labeling, with higher accuracy
@@ -1045,7 +1045,7 @@
         cat: 'cat-productivity',
         label: 'Data Scientist Productivity',
         amount: productivitySaving,
-        detail: `${numDS} data scientists work 33% faster on data tasks (Equinor benchmark). Saves ~${Math.round(hoursSavedProductivity).toLocaleString()} hours/year.`,
+        detail: `${numDS} data scientists work 33% faster on data tasks (energy major benchmark). Saves ~${Math.round(hoursSavedProductivity).toLocaleString()} hours/year.`,
         pct: productivitySaving / maxSaving * 100
       },
       {
